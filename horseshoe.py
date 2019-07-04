@@ -80,11 +80,11 @@ def pm_horseshoe(X, y, b):
     horseshoe = pm.Model()
     with horseshoe:
         sigma = pm.HalfNormal('sigma', 2)
-        tau_0 = m / (X.shape[0] - m) * sigma / tt.sqrt(X.shape[0])
+        tau_0 = m / (X.shape[1] - m) * sigma / tt.sqrt(X.shape[0])
 
         tau = pm.HalfCauchy('tau', tau_0)
         c2  = pm.InverseGamma('c2', dof/2, dof/2 * ss**2)
-        lam = pm.HalfCauchy('lam', 1)
+        lam = pm.HalfCauchy('lam', 1, shape=X.shape[1])
 
         l1 = lam * tt.sqrt(c2)
         l2 = tt.sqrt(c2 + tau * tau * lam * lam)
@@ -104,7 +104,5 @@ def pm_horseshoe(X, y, b):
 if __name__ == '__main__':
 
     X, y, b, f = make_data(100, 200)
-    sk_lasso_model(X, y, b)
-
-
-
+#    sk_lasso_model(X, y, b)
+    pm_horseshoe(X, y, b)
